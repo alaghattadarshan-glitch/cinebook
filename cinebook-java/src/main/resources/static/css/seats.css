@@ -1,0 +1,211 @@
+/* ==========================================================================
+   CINEBOOK - Cinema Seating & Layout Styles
+   ========================================================================== */
+
+.seating-container {
+  max-width: 960px;
+  margin: 1.5rem auto;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-card);
+}
+
+.show-header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.show-header-card h2 {
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.show-sub-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Screen Curve Graphic */
+.screen-area {
+  margin: 2rem auto 3rem;
+  text-align: center;
+  perspective: 400px;
+}
+
+.cinema-screen {
+  width: 80%;
+  height: 12px;
+  background: linear-gradient(to bottom, #ffffff, #64748b);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4);
+  margin: 0 auto 0.75rem;
+  transform: rotateX(-15deg);
+}
+
+.screen-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+/* Legend */
+.seat-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  padding: 0.75rem;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Seating Grid */
+.seat-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tier-section {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.tier-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.row-identifier {
+  width: 24px;
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Individual Seat */
+.seat {
+  width: 34px;
+  height: 32px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px 6px 3px 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  position: relative;
+}
+
+.seat:not(.booked):not(.locked):hover {
+  border-color: var(--accent-red);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+/* Seat States */
+.seat.available {
+  background-color: #1e293b;
+  border-color: #475569;
+}
+
+.seat.selected {
+  background-color: #16a34a !important;
+  border-color: #22c55e !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+.seat.booked {
+  background-color: #334155;
+  border-color: #334155;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.seat.locked {
+  background-color: #854d0e;
+  border-color: #ca8a04;
+  color: #fef08a;
+  cursor: not-allowed;
+}
+
+/* Recliner Styling */
+.seat.recliner {
+  width: 44px;
+  border-radius: 8px 8px 4px 4px;
+}
+
+/* Bottom Summary Bar */
+.booking-summary-bar {
+  position: sticky;
+  bottom: 0;
+  background-color: rgba(17, 24, 39, 0.98);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-md);
+  margin-top: 2rem;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.selected-seats-badge {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.summary-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent-red);
+}
