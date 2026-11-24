@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed - {{ booking.booking_reference }} | CINEBOOK{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 3rem auto; text-align: center; background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 3rem; box-shadow: var(--shadow-card);">
+  <div style="width: 72px; height: 72px; background: rgba(34, 197, 94, 0.2); border: 2px solid #22c55e; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: #22c55e; font-size: 2rem;">
+    ✓
+  </div>
+
+  <h1 style="font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Booking Confirmed!</h1>
+  <p style="color: var(--text-secondary); margin-bottom: 2rem;">Your tickets have been reserved and payment was successfully authorized.</p>
+
+  <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; text-align: left; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">BOOKING ID</span>
+      <span style="font-weight: 700; color: #fff;">{{ booking.booking_reference }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">MOVIE</span>
+      <span style="font-weight: 700; color: #fff;">{{ booking.show.movie.title }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">CINEMA &amp; SCREEN</span>
+      <span style="font-weight: 700; color: #fff;">{{ booking.show.theatre.name }} ({{ booking.show.screen.screen_number }})</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">SHOWTIME</span>
+      <span style="font-weight: 700; color: #fff;">{{ booking.show.formatted_date }} at {{ booking.show.formatted_time }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">SEATS</span>
+      <span style="font-weight: 800; color: var(--accent-gold);">{{ booking.seat_codes }}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; border-top: 1px dashed var(--border-color); padding-top: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">TOTAL PAID</span>
+      <span style="font-weight: 800; color: var(--accent-red); font-size: 1.15rem;">₹{{ booking.total_amount }}</span>
+    </div>
+  </div>
+
+  <div style="display: flex; justify-content: center; gap: 1rem;">
+    <a href="{{ url_for('tickets.view', booking_ref=booking.booking_reference) }}" class="btn btn-primary">View Digital Ticket</a>
+    <a href="{{ url_for('tickets.download_pdf', booking_ref=booking.booking_reference) }}" class="btn btn-secondary">Download PDF Ticket</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{{ movie.title }} - Book Tickets | CINEBOOK{% endblock %}
+
+{% block content %}
+<!-- Movie Banner & Main Details -->
+<div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 2.5rem; box-shadow: var(--shadow-card);">
+  <div style="position: relative; height: 320px; overflow: hidden;">
+    <img src="{{ movie.backdrop_url }}" alt="Backdrop" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35);">
+    <div style="position: absolute; bottom: 2rem; left: 2rem; right: 2rem; display: flex; gap: 2rem; align-items: flex-end;">
+      <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 160px; height: 230px; object-fit: cover; border-radius: var(--radius-md); border: 3px solid #111827; box-shadow: 0 8px 24px rgba(0,0,0,0.8);">
+      <div style="flex: 1;">
+        <span class="hero-badge">{{ movie.category.replace('_', ' ') }}</span>
+        <h1 style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">{{ movie.title }}</h1>
+        <div style="display: flex; gap: 1rem; color: var(--text-secondary); font-size: 0.95rem; align-items: center;">
+          <span style="color: var(--accent-gold); font-weight: 700;">★ {{ movie.rating }}/10</span>
+          <span>{{ movie.runtime }} mins</span>
+          <span>{{ movie.language }}</span>
+          <span>{{ movie.genre }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 2rem;">
+    <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">About the Movie</h3>
+    <p style="color: var(--text-secondary); line-height: 1.7; max-width: 900px; margin-bottom: 1.5rem;">{{ movie.description }}</p>
+    {% if movie.trailer_url %}
+      <a href="{{ movie.trailer_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">▶ Watch Official Trailer</a>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Showtimes Section -->
+<div class="section-header">
+  <h2 class="section-title">Select Showtimes in {{ selected_city }}</h2>
+</div>
+
+{% if shows_by_theatre %}
+  <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
+    {% for theatre, shows in shows_by_theatre.items() %}
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff;">{{ theatre.name }}</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">📍 {{ theatre.location }}</p>
+          </div>
+          <span style="color: var(--text-secondary); font-size: 0.8rem;">M-Ticket Available</span>
+        </div>
+
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          {% for show in shows %}
+            <a href="{{ url_for('booking.seat_selection', show_id=show.id) }}" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 0.6rem 1rem; text-align: center; min-width: 130px; transition: var(--transition);">
+              <div style="font-weight: 700; color: #fff; font-size: 1.05rem;">{{ show.formatted_time }}</div>
+              <div style="font-size: 0.75rem; color: var(--accent-gold); margin-top: 0.2rem;">{{ show.screen.screen_type }}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">From ₹{{ show.base_price }}</div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div style="text-align: center; padding: 4rem 1rem; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+    <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">No shows scheduled in {{ selected_city }}</h3>
+    <p style="color: var(--text-secondary);">Please select another city from the top navigation or check back shortly.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

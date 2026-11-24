@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}CINEBOOK | Latest Movies, Theatres & Tickets{% endblock %}
+
+{% block content %}
+  <!-- Featured Movie Hero Banner -->
+  {% if featured_movie %}
+    <div class="hero-banner">
+      <img class="backdrop" src="{{ featured_movie.backdrop_url }}" alt="{{ featured_movie.title }}">
+      <div class="hero-overlay">
+        <div class="hero-text">
+          <span class="hero-badge">Featured in {{ selected_city }}</span>
+          <h1 class="hero-title">{{ featured_movie.title }}</h1>
+          <div class="hero-meta">
+            <span class="rating">★ {{ featured_movie.rating }}/10</span>
+            <span>{{ featured_movie.language }}</span>
+            <span>{{ featured_movie.genre }}</span>
+            <span>{{ featured_movie.runtime }} mins</span>
+          </div>
+          <p class="hero-desc">{{ featured_movie.description }}</p>
+          <a href="{{ url_for('movies.detail', movie_id=featured_movie.id) }}" class="btn btn-primary">Book Tickets</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Now Showing Section -->
+  <div class="section-header">
+    <h2 class="section-title">Now Showing</h2>
+    <a href="{{ url_for('main.explore') }}" class="nav-link">See All &rarr;</a>
+  </div>
+  <div class="movie-grid">
+    {% for movie in now_showing %}
+      <div class="movie-card">
+        <div class="poster-wrapper">
+          <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" loading="lazy">
+          <span class="rating-badge">★ {{ movie.rating }}</span>
+        </div>
+        <div class="card-details">
+          <h3 class="card-title">{{ movie.title }}</h3>
+          <p class="card-genre">{{ movie.genre }}</p>
+          <div class="card-actions">
+            <a href="{{ url_for('movies.detail', movie_id=movie.id) }}" class="btn btn-primary">Book Tickets</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Trending Movies Section -->
+  <div class="section-header">
+    <h2 class="section-title">Trending Movies</h2>
+    <a href="{{ url_for('main.explore') }}" class="nav-link">See All &rarr;</a>
+  </div>
+  <div class="movie-grid">
+    {% for movie in trending %}
+      <div class="movie-card">
+        <div class="poster-wrapper">
+          <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" loading="lazy">
+          <span class="rating-badge">★ {{ movie.rating }}</span>
+        </div>
+        <div class="card-details">
+          <h3 class="card-title">{{ movie.title }}</h3>
+          <p class="card-genre">{{ movie.genre }}</p>
+          <div class="card-actions">
+            <a href="{{ url_for('movies.detail', movie_id=movie.id) }}" class="btn btn-primary">Book Tickets</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Coming Soon Section -->
+  {% if coming_soon %}
+    <div class="section-header">
+      <h2 class="section-title">Coming Soon</h2>
+    </div>
+    <div class="movie-grid">
+      {% for movie in coming_soon %}
+        <div class="movie-card">
+          <div class="poster-wrapper">
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" loading="lazy">
+            <span class="rating-badge">Release: {{ movie.release_date or 'Soon' }}</span>
+          </div>
+          <div class="card-details">
+            <h3 class="card-title">{{ movie.title }}</h3>
+            <p class="card-genre">{{ movie.genre }}</p>
+            <div class="card-actions">
+              <a href="{{ url_for('movies.detail', movie_id=movie.id) }}" class="btn btn-secondary">View Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Popular Theatres Section -->
+  <div class="section-header">
+    <h2 class="section-title">Popular Theatres in {{ selected_city }}</h2>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    {% for theatre in theatres %}
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem;">
+        <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: #fff;">{{ theatre.name }}</h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">📍 {{ theatre.location }}, {{ theatre.city }}</p>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          {% for screen in theatre.screens %}
+            <span style="background: var(--bg-card); font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--accent-gold);">{{ screen.screen_type }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% endblock %}
