@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${movie.title} + ' - Book Tickets | CINEBOOK'">Movie Details</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a th:href="@{/}">
+        <img th:src="@{/images/logo.svg}" alt="CINEBOOK">
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a th:href="@{/}" class="btn btn-secondary">&larr; Back to Movies</a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 2.5rem;">
+      <div style="position: relative; height: 320px; overflow: hidden;">
+        <img th:src="${movie.backdropPath}" alt="Backdrop" style="width: 100%; height: 100%; object-fit: cover; filter: brightness(0.35);">
+        <div style="position: absolute; bottom: 2rem; left: 2rem; right: 2rem; display: flex; gap: 2rem; align-items: flex-end;">
+          <img th:src="${movie.posterPath}" th:alt="${movie.title}" style="width: 160px; height: 230px; object-fit: cover; border-radius: var(--radius-md); border: 3px solid #111827;">
+          <div>
+            <span class="hero-badge" th:text="${movie.category}">NOW SHOWING</span>
+            <h1 style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;" th:text="${movie.title}">Movie Title</h1>
+            <div style="display: flex; gap: 1rem; color: var(--text-secondary); font-size: 0.95rem;">
+              <span style="color: var(--accent-gold); font-weight: 700;" th:text="'★ ' + ${movie.rating} + '/10'">★ 9.0/10</span>
+              <span th:text="${movie.runtime} + ' mins'">142 mins</span>
+              <span th:text="${movie.language}">Kannada</span>
+              <span th:text="${movie.genre}">Drama</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding: 2rem;">
+        <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 0.5rem;">About the Movie</h3>
+        <p style="color: var(--text-secondary); line-height: 1.7; max-width: 900px;" th:text="${movie.description}">Description</p>
+      </div>
+    </div>
+
+    <!-- Shows in Bengaluru -->
+    <div class="section-header">
+      <h2 class="section-title">Select Showtimes in Bengaluru</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 3rem;">
+      <div th:each="s : ${shows}" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff;" th:text="${s.screen.theatre.name}">Cinema Name</h3>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;" th:text="'📍 ' + ${s.screen.theatre.location} + ' &bull; ' + ${s.screen.screenNumber}">Location</p>
+          <p style="color: var(--accent-gold); font-size: 0.8rem; margin-top: 0.25rem;" th:text="${s.screen.soundType} + ' &bull; ' + ${s.screen.screenType}">Dolby Atmos</p>
+        </div>
+        <div style="text-align: right; display: flex; align-items: center; gap: 1.5rem;">
+          <div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #fff;" th:text="${#temporals.format(s.startTime, 'hh:mm a')}">07:00 PM</div>
+            <div style="font-size: 0.8rem; color: #22c55e; font-weight: 700;" th:text="'From ₹' + ${s.basePrice}">From ₹200</div>
+          </div>
+          <a th:href="@{'/book/show/' + ${s.id} + '/seats'}" class="btn btn-primary">Select Seats &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>

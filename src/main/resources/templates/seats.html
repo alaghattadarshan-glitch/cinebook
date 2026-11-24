@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="'Select Seats - ' + ${show.movie.title} + ' | CINEBOOK'">Select Seats | CINEBOOK</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/seats.css}">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <a th:href="@{/}">
+        <img th:src="@{/images/logo.svg}" alt="CINEBOOK">
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a th:href="@{'/movie/' + ${show.movie.id}}" class="btn btn-secondary">&larr; Change Showtime</a>
+    </div>
+  </nav>
+
+  <input type="hidden" id="current-show-id" th:value="${show.id}">
+
+  <div class="seating-container">
+    <div class="show-header-card">
+      <div>
+        <h2 th:text="${show.movie.title}">Movie Title</h2>
+        <div class="show-sub-meta">
+          <span>📍 <strong th:text="${show.screen.theatre.name}">Theatre</strong> (<span th:text="${show.screen.screenNumber}">Screen</span>)</span> &bull;
+          <span>🗓️ <span th:text="${#temporals.format(show.startTime, 'EEEE, dd MMM yyyy - hh:mm a')}">Time</span></span>
+        </div>
+      </div>
+      <div>
+        <span style="background: rgba(229, 9, 20, 0.2); color: var(--accent-red); padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;" th:text="${show.screen.soundType}">Dolby Atmos</span>
+      </div>
+    </div>
+
+    <!-- Seat Legend -->
+    <div class="seat-legend">
+      <div class="legend-item"><div class="seat available" style="width:20px;height:20px;"></div> Available</div>
+      <div class="legend-item"><div class="seat selected" style="width:20px;height:20px;"></div> Selected</div>
+      <div class="legend-item"><div class="seat locked" style="width:20px;height:20px;"></div> Reserved / In Checkout</div>
+      <div class="legend-item"><div class="seat booked" style="width:20px;height:20px;"></div> Booked</div>
+    </div>
+
+    <!-- Screen Projection Curve -->
+    <div class="screen-area">
+      <div class="cinema-screen"></div>
+      <span class="screen-label">All eyes this way please (Screen)</span>
+    </div>
+
+    <!-- Seating Grid -->
+    <div class="seat-grid">
+      <div th:each="entry : ${layout}" class="seat-row">
+        <span class="row-identifier" th:text="${entry.key}">A</span>
+
+        <div th:each="ss : ${entry.value}"
+             th:class="'seat ' + (${ss.seat.tier == 'RECLINER'} ? 'recliner ' : '') + (${ss.status == 'BOOKED'} ? 'booked' : (${ss.status == 'LOCKED'} ? 'locked' : 'available'))"
+             th:data-seat-id="${ss.id}"
+             th:data-seat-code="${ss.seat.seatCode}"
+             th:data-seat-price="${ss.price}"
+             th:text="${ss.seat.seatNumber}">
+          1
+        </div>
+
+        <span class="row-identifier" th:text="${entry.key}">A</span>
+      </div>
+    </div>
+
+    <!-- Sticky Bottom Summary Bar -->
+    <div class="booking-summary-bar">
+      <div class="summary-info">
+        <div>Selected Seats: <span id="selected-seats-list" class="selected-seats-badge">None</span></div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">Real-time pricing with Bengaluru multiplex tier rates</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div class="summary-price">₹ <span id="total-price-display">0.00</span></div>
+        <button id="checkout-btn" class="btn btn-primary" disabled style="opacity: 0.5;">Proceed to Checkout &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const seats = document.querySelectorAll(".seat.available");
+      const selectedListSpan = document.getElementById("selected-seats-list");
+      const totalPriceSpan = document.getElementById("total-price-display");
+      const checkoutBtn = document.getElementById("checkout-btn");
+      const showId = document.getElementById("current-show-id").value;
+
+      let selected = [];
+
+      function updateUI() {
+        if (selected.length === 0) {
+          selectedListSpan.textContent = "None";
+          totalPriceSpan.textContent = "0.00";
+          checkoutBtn.disabled = true;
+          checkoutBtn.style.opacity = "0.5";
+          return;
+        }
+
+        const codes = selected.map(s => s.code).join(", ");
+        const total = selected.reduce((sum, s) => sum + s.price, 0);
+
+        selectedListSpan.textContent = codes;
+        totalPriceSpan.textContent = total.toFixed(2);
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.opacity = "1";
+      }
+
+      seats.forEach(seat => {
+        seat.addEventListener("click", () => {
+          const id = parseInt(seat.dataset.seatId);
+          const code = seat.dataset.seatCode;
+          const price = parseFloat(seat.dataset.seatPrice);
+
+          const idx = selected.findIndex(s => s.id === id);
+          if (idx >= 0) {
+            selected.splice(idx, 1);
+            seat.classList.remove("selected");
+            seat.classList.add("available");
+          } else {
+            if (selected.length >= 10) {
+              alert("You can select up to 10 seats per booking.");
+              return;
+            }
+            selected.push({ id, code, price });
+            seat.classList.add("selected");
+            seat.classList.remove("available");
+          }
+          updateUI();
+        });
+      });
+
+      checkoutBtn.addEventListener("click", async () => {
+        if (selected.length === 0) return;
+        checkoutBtn.disabled = true;
+        checkoutBtn.textContent = "Reserving seats...";
+
+        try {
+          const res = await fetch("/book/api/lock-seats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              showId: parseInt(showId),
+              seatIds: selected.map(s => s.id)
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            window.location.href = data.redirectUrl;
+          } else {
+            alert(data.message || "Failed to reserve seats. Please reselect.");
+            window.location.reload();
+          }
+        } catch (err) {
+          alert("Network or booking error. Please retry.");
+          window.location.reload();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
